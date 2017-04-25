@@ -1,0 +1,8 @@
+name: cas
+description: |
+    cas for wisecloud
+version : @{module_version}
+category: wisecloud
+maintainer: dongcj   ntwk@163.com
+license: No
+projectURL: http://www.svi-tech.com.cn

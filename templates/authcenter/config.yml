@@ -1,0 +1,9 @@
+name: authcenter
+description: |
+    authcenter for wisecloud
+#note:default version : 1.0.0
+version : @{module_version}
+category: wisecloud
+maintainer: xushun@svi-tech.com.cn
+license: No
+projectURL: http://www.svi-tech.com.cn

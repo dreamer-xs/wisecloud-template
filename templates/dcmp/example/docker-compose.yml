@@ -1,0 +1,95 @@
+version: '2'
+services:
+  server:
+    #note:module server images version
+    image: registry.9418.club/app/wisecloud/dcmp/server:@{server_version}
+    #note:module postgres value
+    environment:
+      - PGDATA=${pgdata}
+      - POSTGRES_DB=${postgres_db}
+      - POSTGRES_PASSWORD=${postgres_password}
+      - POSTGRES_USER=${postgres_user}
+    stdin_open: true
+    network_mode: host
+    tty: true
+    volumes_from:
+    - server-data
+    labels:
+      io.rancher.container.dns: 'true'
+      io.rancher.sidekicks: server-data
+      io.rancher.container.pull_image: always
+  server-data:
+    image: registry.9418.club/app/wisecloud/dcmp/server-data:@{server_version}
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  pc:
+    image: registry.9418.club/app/wisecloud/dcmp/pc:@{pc_version}
+    stdin_open: true
+    tty: true
+    volumes_from:
+    - pc-data
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.sidekicks: pc-data
+  pc-data:
+    image: registry.9418.club/app/wisecloud/dcmp/pc-data:@{pc_version}
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  web:
+    image: registry.9418.club/app/wisecloud/dcmp/web:@{web_version}
+    stdin_open: true
+    tty: true
+    volumes_from:
+    - web-data
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.sidekicks: web-data
+  web-data:
+    image: registry.9418.club/app/wisecloud/dcmp/web-data:@{web_version}
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  wisecloud:
+    image: rancher/lb-service-haproxy:v0.5.9
+    ports:
+    - 8086:8086/tcp
+    - 8087:8087/tcp
+    expose:
+    - 8000:8000/tcp
+    - 5432:5432/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin
+      io.rancher.container.create_agent: 'true'
+  postgres-data:
+    image: registry.9418.club/busybox
+    stdin_open: true
+    volumes:
+    - /var/lib/postgresql/data/pgdata
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.container.start_once: 'true'
+  postgres:
+    image: registry.9418.club/postgres:latest
+    #note:module postgres value
+    environment:
+      - PGDATA=${pgdata}
+      - POSTGRES_DB=${postgres_db}
+      - POSTGRES_PASSWORD=${postgres_password}
+      - POSTGRES_USER=${postgres_user}
+    stdin_open: true
+    tty: true
+    volumes_from:
+    - postgres-data
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: db_postgres=true
+      io.rancher.sidekicks: postgres-data

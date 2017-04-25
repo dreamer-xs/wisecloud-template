@@ -1,0 +1,114 @@
+.catalog:
+  #note:module name
+  name: dcmp
+  #note:module version
+  version: @{module_version}
+  description: |
+    dcmp for wisecloud
+  #note:module mininum version
+  #minimum_rancher_version: v1.1.0
+  maintainer: "xushun@svi.tech.com.cn"
+  uuid: dcmp-@{module_version}
+  questions:
+    - variable: "postgres_user"
+      description: "dcmp postgres username"
+      label: "Postgres UserName:"
+      required: true
+      default: postgres_user
+      type: "string"
+    - variable: "postgres_password"
+      description: "dcmp postgres password"
+      label: "Postgres Password:"
+      required: true
+      default: postgres_password
+      type: "string"
+    #note:module postgres database name
+    - variable: "postgres_db"
+      description: "dcmp postgres database"
+      label: "postgres Database:"
+      required: true
+      default: dcmp
+      type: "string"
+    - variable: "pgdata"
+      description: "dcmp postgres data"
+      label: "Postgres Data Path:"
+      required: true
+      default: /var/lib/postgresql/data/pgdata
+      type: "string"
+   #- variable: "version"
+   #  label: "dcmp version"
+   #  description: |
+   #    authencet images version
+   #  default: v1
+   #  required: v2
+   #  type: enum
+   #  options:
+   #    - v1
+   #    - v2
+version: '2'
+services:
+  server:
+    scale: 1
+    start_on_create: true
+  pc:
+    scale: 1
+    start_on_create: true
+  server-data:
+    scale: 1
+    start_on_create: true
+  web:
+    scale: 1
+    start_on_create: true
+  pc-data:
+    scale: 1
+    start_on_create: true
+  web-data:
+    scale: 1
+    start_on_create: true
+  wisecloud:
+    scale: 1
+    start_on_create: true
+    lb_config:
+      certs: []
+      port_rules:
+      - priority: 1
+        protocol: http
+        service: web
+
+        #note:module web port
+        source_port: 8086
+        target_port: 8086
+      - priority: 2
+        protocol: http
+        service: server
+
+        #note:module server port
+        source_port: 8000
+        target_port: 8000
+      - priority: 3
+        protocol: tcp
+        service: postgres
+
+        #note:module postgres port
+        source_port: 5432
+        target_port: 5432
+      - hostname: ''
+        path: ''
+        priority: 4
+        protocol: http
+        service: pc
+        source_port: 8087
+        target_port: 8087
+    health_check:
+      healthy_threshold: 2
+      response_timeout: 2000
+      port: 42
+      unhealthy_threshold: 3
+      interval: 2000
+      strategy: recreate
+  postgres-data:
+    scale: 1
+    start_on_create: true
+  postgres:
+    scale: 1
+    start_on_create: true

@@ -1,0 +1,8 @@
+name: ues
+description: |
+    ues for wisecloud
+version : @{module_version}
+category: wisecloud
+maintainer: qinkang@svi-tech.com.cn
+license: No
+projectURL: http://www.svi-tech.com.cn

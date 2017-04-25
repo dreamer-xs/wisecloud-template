@@ -1,0 +1,8 @@
+name: dcmp
+description: |
+    dcmp for wisecloud
+version : @{module_version}
+category: wisecloud
+maintainer: xushun@svi-tech.com.cn
+license: No
+projectURL: http://www.svi-tech.com.cn
